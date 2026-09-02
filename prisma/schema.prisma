@@ -1,0 +1,26 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Transaction {
+  id            String   @id @default(cuid())
+  type          String   // "INCOME" or "EXPENSE"
+  category      String   // e.g. "Product Sourcing", "Courier", "Dollar/Ads", "Packaging", "Online Sales", "Shop Sales", "Utilities", "Other"
+  amount        Float
+  paymentMethod String   // "Cash", "bKash/Nagad", "Bank Transfer"
+  recordedBy    String   // Name of the person adding/updating the transaction
+  notes         String?
+  imageUrl      String?  // Cloudinary image URL (stored as webp)
+  date          DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([recordedBy])
+  @@index([date])
+  @@index([type])
+}
