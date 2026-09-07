@@ -46,14 +46,14 @@ export default function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs transition cursor-pointer"
+        className="flex items-center gap-2 p-0 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs transition cursor-pointer"
       >
         {user.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={user.image}
             alt={displayName}
-            className="w-6 h-6 rounded-full object-cover border border-emerald-500/40"
+            className="w-8 h-8 rounded-full object-cover border border-emerald-500/40"
           />
         ) : (
           <div className="w-6 h-6 rounded-full bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-[11px]">
@@ -61,7 +61,7 @@ export default function UserMenu() {
           </div>
         )}
 
-        <div className="hidden sm:flex flex-col text-left">
+        <div className="hidden md:flex flex-col text-left">
           <span className="font-semibold text-xs text-white max-w-[110px] truncate leading-tight">
             {displayName}
           </span>
@@ -70,7 +70,7 @@ export default function UserMenu() {
           </span>
         </div>
 
-        <ChevronDown className="w-3 h-3 text-slate-400" />
+        <ChevronDown className="hidden md:flex w-3 h-3 text-slate-400" />
       </button>
 
       {/* Dropdown Menu */}
