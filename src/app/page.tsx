@@ -367,6 +367,7 @@ export default function DashboardPage() {
           title="Delete Transaction"
           message={`Are you sure you want to permanently delete "${deleteTarget?.name}"? This action cannot be undone.`}
           confirmLabel="Delete"
+          requireConfirmationText="Delete"
           isDestructive={true}
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeleteTarget(null)}
