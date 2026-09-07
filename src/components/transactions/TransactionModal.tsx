@@ -28,6 +28,7 @@ import {
 } from '@/types/transaction';
 import { convertImageToWebP } from '@/lib/imageUtils';
 import { useUploadImage } from '@/hooks/useTransactions';
+import { useSession } from 'next-auth/react';
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ export default function TransactionModal({
   onClose,
   onSubmit,
 }: TransactionModalProps) {
+  const { data: session } = useSession();
   const [type, setType] = useState<TransactionType>(initialType);
   const [category, setCategory] = useState<string>('');
   const [customCategory, setCustomCategory] = useState<string>('');
@@ -68,6 +70,8 @@ export default function TransactionModal({
 
   // Reset form or populate from editing transaction
   useEffect(() => {
+    const loggedInName = session?.user?.name || (session?.user?.email ? session.user.email.split('@')[0] : '');
+
     if (editingTransaction) {
       setType(editingTransaction.type);
       const catList: readonly string[] =
@@ -84,7 +88,7 @@ export default function TransactionModal({
 
       setAmount(String(editingTransaction.amount));
       setPaymentMethod((editingTransaction.paymentMethod as PaymentMethod) || 'Cash');
-      setRecordedBy(editingTransaction.recordedBy || '');
+      setRecordedBy(editingTransaction.recordedBy || loggedInName || '');
       setNotes(editingTransaction.notes || '');
 
       const txDate = editingTransaction.date
@@ -102,8 +106,8 @@ export default function TransactionModal({
       setCustomCategory('');
       setAmount('');
       setPaymentMethod('Cash');
-      // Suggest last operator or default
-      setRecordedBy((prev) => prev || (staffUsers[0] || ''));
+      // Automatically assign logged-in user name as recordedBy
+      setRecordedBy(loggedInName || staffUsers[0] || 'Owner');
       setNotes('');
       setDate(new Date().toISOString().slice(0, 16));
       setImageUrl(null);
@@ -111,7 +115,7 @@ export default function TransactionModal({
       setWebpSavings(null);
     }
     setErrorMsg(null);
-  }, [isOpen, editingTransaction, initialType, staffUsers]);
+  }, [isOpen, editingTransaction, initialType, staffUsers, session]);
 
   // When type toggles (Income <-> Expense), adjust default category
   const handleTypeChange = (newType: TransactionType) => {
@@ -363,10 +367,17 @@ export default function TransactionModal({
 
             {/* Recorded By (Operator Name) */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-                <User className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Recorded By (Name) *</span>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+                  <User className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Recorded By (Name) *</span>
+                </label>
+                {session?.user && (
+                  <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center gap-1 font-medium">
+                    <Check className="w-2.5 h-2.5" /> Logged in
+                  </span>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type="text"

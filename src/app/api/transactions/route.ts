@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, startOfYear, endOfYear, parseISO } from 'date-fns';
 import { getMockTransactions, addMockTransaction } from '@/lib/mockStore';
+import { auth } from '@/auth';
 
 function buildDateFilter(timeframe?: string, startDateStr?: string, endDateStr?: string) {
   const now = new Date();
@@ -131,8 +132,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth().catch(() => null);
     const body = await request.json();
-    const { type, category, amount, paymentMethod, recordedBy, notes, imageUrl, date } = body;
+    let { type, category, amount, paymentMethod, recordedBy, notes, imageUrl, date } = body;
+
+    if (!recordedBy && session?.user?.name) {
+      recordedBy = session.user.name;
+    }
 
     if (!type || !category || amount === undefined || !paymentMethod || !recordedBy) {
       return NextResponse.json(

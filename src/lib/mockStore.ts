@@ -130,3 +130,48 @@ export function deleteMockTransaction(id: string): boolean {
   }
   return false;
 }
+
+export interface MockUser {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const globalForUsers = globalThis as unknown as {
+  mockUsers: MockUser[] | undefined;
+};
+
+if (!globalForUsers.mockUsers) {
+  globalForUsers.mockUsers = [
+    {
+      id: 'user-admin',
+      name: 'Owner',
+      email: 'owner@looksmen.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+}
+
+export function getMockUsers(): MockUser[] {
+  if (!globalForUsers.mockUsers) {
+    globalForUsers.mockUsers = [];
+  }
+  return globalForUsers.mockUsers;
+}
+
+export function addMockUser(user: MockUser): MockUser {
+  const users = getMockUsers();
+  users.push(user);
+  return user;
+}
+
+export function findMockUserByEmail(email: string): MockUser | undefined {
+  const users = getMockUsers();
+  return users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+}
+

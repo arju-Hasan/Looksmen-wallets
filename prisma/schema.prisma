@@ -24,3 +24,14 @@ model Transaction {
   @@index([date])
   @@index([type])
 }
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
